@@ -26,7 +26,8 @@
     <string name="meet_string">Meet Time</string>
     <string name="meet_room">Room</string>
 
-    <!-- not used, good for quick reference -->
+    <!-- not used, Eclipse/Android apparently doesn't work with declaring a string var for webservice url.
     <string name="webservice_url">http://plato.cs.virginia.edu/~cs4720s14pepper/view/CLAS/</string>
+     -->
 
 </resources>

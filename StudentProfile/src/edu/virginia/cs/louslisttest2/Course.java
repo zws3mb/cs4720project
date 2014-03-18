@@ -1,9 +1,8 @@
-//Team Pepper, [Amas, Larsen, Seid], Phase 2
+//Team Pepper, {Amas, Larsen, Seid}, Phase 2
 
 package edu.virginia.cs.louslisttest2; //should change this
 
 //import java.util.Arrays;
-
 
 public class Course {
 

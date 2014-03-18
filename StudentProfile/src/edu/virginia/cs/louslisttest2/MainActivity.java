@@ -1,4 +1,4 @@
-//Team Pepper, [Amas, Larsen, Seid], Phase 2
+//Team Pepper, {Amas, Larsen, Seid}, Phase 2
 package edu.virginia.cs.louslisttest2;
 
 import java.io.BufferedReader;
@@ -36,6 +36,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -43,7 +44,7 @@ import android.widget.TextView;
 @SuppressLint("NewApi")
 public class MainActivity extends Activity {
 	
-	ListView courseList;
+	ScrollView courseList; //old: ListView courseList;
 	String webserviceURL = "http://plato.cs.virginia.edu/~cs4720s14pepper/view/CLAS/";
 	ArrayList<Course> values;
 	ArrayAdapter<Course> adapter;
@@ -73,21 +74,23 @@ public class MainActivity extends Activity {
 	}
 
 	public void initView() {
-		//retrieve saved courses
+		//retrieve saved courses if app closes
 		courseIDsEntered = getSharedPreferences("courseList", MODE_PRIVATE);
 				
 		courseScrollView = (TableLayout) findViewById(R.id.courseScrollView);
-		courseIDEditText = (EditText) findViewById(R.id.CourseIDEditText);
+		courseIDEditText = (EditText) findViewById(R.id.courseIDEditText);
 		
-		enterCourseIDButton = (Button) findViewById(R.id.EnterCourseIDButton);
+		//ENTER and DELETE (CLEAR) BUTTONS
+		enterCourseIDButton = (Button) findViewById(R.id.enterCourseIDButton);
 		deleteCourseIDButton = (Button) findViewById(R.id.deleteCourseIDButton);
 		
-		//click listeners for enter and delete
+		//ENTER and DELETE Listeners
 		enterCourseIDButton.setOnClickListener(enterCourseIDButtonListener);
 		deleteCourseIDButton.setOnClickListener(deleteCourseIDButtonListener);
 		
-		updateSavedCourseList(null); //update courseList if null passed in. 
+		updateSavedCourseList(null); 
 		
+		//OLD EXAMPLE CODE BELOW
 		values = new ArrayList<Course>();
 
 		// Adjust the URL with the appropriate parameters
@@ -101,8 +104,8 @@ public class MainActivity extends Activity {
 		adapter = new ArrayAdapter<Course>(this,
 				android.R.layout.simple_list_item_1, android.R.id.text1, values);
 
-		// Assign adapter to ListView
-		courseList.setAdapter(adapter);
+		// Assign adapter to ListView OLD CODE
+		//courseList.setAdapter(adapter);
 
 		new GetCoursesTask().execute(url);
 
@@ -142,7 +145,7 @@ public class MainActivity extends Activity {
 		//every time a new CourseID is entered
 		LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View newCourseIDRow = inflater.inflate(R.layout.course_id_row, null);
-		TextView newCourseTextView = (TextView) newCourseIDRow.findViewById(R.id.CourseListTextView);
+		TextView newCourseTextView = (TextView) newCourseIDRow.findViewById(R.id.courseListTextView);
 		newCourseTextView.setText(course);		
 		
 		//buttons and listeners
@@ -172,7 +175,7 @@ public class MainActivity extends Activity {
 			}
 			
 			else {
-				//ALERT DIALOG BOX: NO INPUT
+				//ALERT DIALOG BOX: Missing CourseID, aka No Input
 				AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 				builder.setTitle(R.string.invalid_course_ID);
 				builder.setPositiveButton(R.string.OK_button, null);
@@ -180,9 +183,7 @@ public class MainActivity extends Activity {
 				AlertDialog theAlert = builder.create();
 				theAlert.show();
 			}
-			
 		}
-		
 	};
 	
 	//delete all courses in view
@@ -191,26 +192,21 @@ public class MainActivity extends Activity {
 	}
 	
 	public OnClickListener deleteCourseIDButtonListener = new OnClickListener() {
-
-		@Override
+		
 		public void onClick(View v) {
 			deleteAllCourseIDs();
-			
 			SharedPreferences.Editor preferencesEditor = courseIDsEntered.edit();
 			preferencesEditor.clear();
 			preferencesEditor.apply();
 		}
-		
-		
 	};
 	
 	public OnClickListener getCourseInfoListener = new OnClickListener() {
-
-		@Override
+		
 		public void onClick(View v) {
 			//parsed Data
 			TableRow tableRow = (TableRow) v.getParent();
-			TextView courseIDTextView = (TextView) tableRow.findViewById(R.id.CourseListTextView);
+			TextView courseIDTextView = (TextView) tableRow.findViewById(R.id.courseListTextView);
 			String courseID = courseIDTextView.getText().toString();
 			
 			//new activity - new intent
@@ -222,11 +218,10 @@ public class MainActivity extends Activity {
 	
 	public OnClickListener addCourseButtonListener = new OnClickListener() {
 
-		@Override
 		public void onClick(View v) {
 			//add course to list
 			TableRow tableRow = (TableRow) v.getParent();
-			TextView courseIDTextView = (TextView) tableRow.findViewById(R.id.CourseListTextView);
+			TextView courseIDTextView = (TextView) tableRow.findViewById(R.id.courseListTextView);
 			String courseID = courseIDTextView.getText().toString();
 			
 			//TODO: ADD courseID TO COURSE LIST
@@ -272,7 +267,7 @@ public class MainActivity extends Activity {
 
 	// The definition of our task class
 	private class GetCoursesTask extends AsyncTask<String, Integer, String> {
-		@Override
+		
 		protected void onPreExecute() {
 		}
 

@@ -20,18 +20,18 @@
             android:text="@string/enter_course" />
 
         <EditText
-            android:id="@+id/CourseIDEditText"
+            android:id="@+id/courseIDEditText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:ems="10"
-            android:inputType="text"
-            android:layout_weight="1" >
+            android:inputType="text" >
 
             <requestFocus />
         </EditText>
 
         <Button
-            android:id="@+id/EnterCourseIDButton"
+            android:id="@+id/enterCourseIDButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/enter_button" />
@@ -45,16 +45,15 @@
         android:background="@color/baby_blue" >
 
         <TextView
-            android:id="@+id/CourseListTextView"
+            android:id="@+id/courseListTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_span="2"
-            android:padding="5dp"
-            android:textColor="@color/black"
             android:gravity="center_horizontal"
-            android:text="@string/title_activity_course_list" 
-            android:textSize="@dimen/course_ID_list_text_size"/>
-        
+            android:padding="5dp"
+            android:text="@string/title_activity_course_list"
+            android:textColor="@color/black"
+            android:textSize="@dimen/course_ID_list_text_size" />
 
     </TableRow>
 

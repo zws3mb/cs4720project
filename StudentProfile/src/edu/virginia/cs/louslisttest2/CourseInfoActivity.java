@@ -1,3 +1,4 @@
+//Team Pepper, {Amas, Larsen, Seid}, Phase 2
 package edu.virginia.cs.louslisttest2;
 
 import java.net.HttpURLConnection;
