@@ -14,14 +14,25 @@ public class Course {
 	public String courseInstructor;
 	public String meetString;
 	public String meetRoom;
-	public String sep = "/";
+	//public String sep = "/";
+
+	public Course(int courseID, String courseName, int sectionNum,
+			String courseInstructor, String meetString, String meetRoom) {
+		super();
+		this.courseID = courseID;
+		this.courseName = courseName;
+		this.sectionNum = sectionNum;
+		this.courseInstructor = courseInstructor;
+		this.meetString = meetString;
+		this.meetRoom = meetRoom;
+	}
 
 	@Override
 	public String toString() {
 		return "Course [courseID=" + courseID + ", courseName=" + courseName
 				+ ", sectionNum=" + sectionNum + ", courseInstructor=" + courseInstructor
 				+ ", meetString=" + meetString + ", meetRoom=" + meetRoom
-				+ ", sep=" + sep + "]";
+				+ "]";
 	}
 
 	public int getCourseID() {
