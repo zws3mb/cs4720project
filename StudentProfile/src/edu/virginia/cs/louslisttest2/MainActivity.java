@@ -49,6 +49,8 @@ public class MainActivity extends Activity {
 	ArrayAdapter<Course> adapter;
 
 	public final static String COURSE_ID = "com.example.courseid.COURSEID";
+	//TODO: check all package names and make sure to reflect correct package path everywhere. 
+	
 	private SharedPreferences courseIDsEntered;
 	private TableLayout courseScrollView;
 	private EditText courseIDEditText;
@@ -212,7 +214,7 @@ public class MainActivity extends Activity {
 			String courseID = courseIDTextView.getText().toString();
 			
 			//new activity - new intent
-			Intent intent = new Intent(MainActivity.this, Course.class);
+			Intent intent = new Intent(MainActivity.this, CourseInfoActivity.class);
 			intent.putExtra(COURSE_ID, courseID); //passes into the new activity
 			startActivity(intent);
 		}
