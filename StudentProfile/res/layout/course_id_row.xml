@@ -6,14 +6,13 @@
     android:padding="@dimen/activity_horizontal_margin" >
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/courseRowTextView"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" 
+        android:layout_height="wrap_content"
         android:layout_span="2"
         android:layout_weight="1"
         android:textColor="@color/black"
-        android:textIsSelectable="true"
-        />
+        android:textIsSelectable="true" />
 
     <Button
         android:id="@+id/getCourseInfoButton"

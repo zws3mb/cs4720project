@@ -1,5 +1,6 @@
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/TableLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
@@ -65,25 +66,23 @@
 		android:layout_weight="1" >
         
         <ScrollView
-            android:id="@+id/courseScrollView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" 
             android:layout_span="2"
-            android:padding="5dp"
-            >
+            android:padding="5dp"   >
 
             <TableLayout
+                android:id="@+id/courseTableScrollView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="5dp"
                 android:stretchColumns="yes" >
-                
             </TableLayout>
         </ScrollView>
 
     </TableRow>
     <TableRow
-        android:id="@+id/tableRow1"
+        android:id="@+id/tableRow4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 

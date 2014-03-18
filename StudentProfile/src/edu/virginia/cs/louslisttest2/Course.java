@@ -2,18 +2,14 @@
 
 package edu.virginia.cs.louslisttest2; //should change this
 
-//import java.util.Arrays;
-
 public class Course {
 
-	//public String[] Course;
 	public int courseID;
 	public String courseName;
 	public int sectionNum;
 	public String courseInstructor;
 	public String meetString;
 	public String meetRoom;
-	//public String sep = "/";
 
 	public Course(int courseID, String courseName, int sectionNum,
 			String courseInstructor, String meetString, String meetRoom) {

@@ -44,7 +44,7 @@ import android.widget.TextView;
 @SuppressLint("NewApi")
 public class MainActivity extends Activity {
 	
-	ScrollView courseList; //old: ListView courseList;
+	ListView courseList; //old: ListView courseList;
 	String webserviceURL = "http://plato.cs.virginia.edu/~cs4720s14pepper/view/CLAS/";
 	ArrayList<Course> values;
 	ArrayAdapter<Course> adapter;
@@ -76,38 +76,37 @@ public class MainActivity extends Activity {
 	public void initView() {
 		//retrieve saved courses if app closes
 		courseIDsEntered = getSharedPreferences("courseList", MODE_PRIVATE);
-				
-		courseScrollView = (TableLayout) findViewById(R.id.courseScrollView);
+//		Log.d("initView", "init" );	
+		courseScrollView = (TableLayout) findViewById(R.id.courseTableScrollView);
 		courseIDEditText = (EditText) findViewById(R.id.courseIDEditText);
 		
-		//ENTER and DELETE (CLEAR) BUTTONS
+		//ENTER and DELETE (CLEAR) BUTTONS and LISTENERS
 		enterCourseIDButton = (Button) findViewById(R.id.enterCourseIDButton);
-		deleteCourseIDButton = (Button) findViewById(R.id.deleteCourseIDButton);
-		
-		//ENTER and DELETE Listeners
 		enterCourseIDButton.setOnClickListener(enterCourseIDButtonListener);
+
+		deleteCourseIDButton = (Button) findViewById(R.id.deleteCourseIDButton);		
 		deleteCourseIDButton.setOnClickListener(deleteCourseIDButtonListener);
 		
-		updateSavedCourseList(null); 
-		
-		//OLD EXAMPLE CODE BELOW
-		values = new ArrayList<Course>();
-
-		// Adjust the URL with the appropriate parameters
-		String url = webserviceURL + "ECON"; //will search for ECON classes for now.
-
-		// First paramenter - Context
-		// Second parameter - Layout for the row
-		// Third parameter - ID of the TextView to which the data is written
-		// Forth - the Array of data
-		//Log.d("HTTP", url);
-		adapter = new ArrayAdapter<Course>(this,
-				android.R.layout.simple_list_item_1, android.R.id.text1, values);
-
-		// Assign adapter to ListView OLD CODE
-		//courseList.setAdapter(adapter);
-
-		new GetCoursesTask().execute(url);
+//		updateSavedCourseList(null);
+//		
+////		//OLD EXAMPLE CODE BELOW
+//		values = new ArrayList<Course>();
+//
+//		// Adjust the URL with the appropriate parameters
+//		String url = webserviceURL; //TODO: Add the search term '+ is'
+//
+//		// First paramenter - Context
+//		// Second parameter - Layout for the row, android.R.layout.simple_list_item_1
+//		// Third parameter - ID of the TextView to which the data is written, android.R.id.text1
+//		// Forth - the Array of data
+//		//Log.d("HTTP", url);
+//		adapter = new ArrayAdapter<Course>(this,
+//				R.layout.course_id_row, R.id.courseRowTextView, values);
+//
+//		// Assign adapter to ListView OLD CODE
+//		courseScrollView.setAdapter(adapter);
+//
+//		new GetCoursesTask().execute(url);
 
 	}
 
@@ -141,7 +140,7 @@ public class MainActivity extends Activity {
 	}
 	
 	private void insertCourseIDInScrollView(String course, int binarySearch) {
-		//set/create a courseID row (from course_id_row.xml) dynamically inside ScrollView 
+		//set/create a courseID row (course_id_row.xml) dynamically inside ScrollView 
 		//every time a new CourseID is entered
 		LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View newCourseIDRow = inflater.inflate(R.layout.course_id_row, null);
