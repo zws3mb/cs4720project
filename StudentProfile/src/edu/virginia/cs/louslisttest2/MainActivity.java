@@ -24,6 +24,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,6 +37,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 @SuppressLint("NewApi")
@@ -57,7 +59,7 @@ public class MainActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.d("onCreate", "start up");
-		setContentView(R.layout.activity_course_list);
+		setContentView(R.layout.activity_main);
 
 		initView();
 	}
@@ -74,8 +76,13 @@ public class MainActivity extends Activity {
 				
 		courseScrollView = (TableLayout) findViewById(R.id.courseScrollView);
 		courseIDEditText = (EditText) findViewById(R.id.CourseIDEditText);
+		
 		enterCourseIDButton = (Button) findViewById(R.id.EnterCourseIDButton);
 		deleteCourseIDButton = (Button) findViewById(R.id.deleteCourseIDButton);
+		
+		//click listeners for enter and delete
+		enterCourseIDButton.setOnClickListener(enterCourseIDButtonListener);
+		deleteCourseIDButton.setOnClickListener(deleteCourseIDButtonListener);
 		
 		updateSavedCourseList(null); //update courseList if null passed in. 
 		
@@ -128,21 +135,21 @@ public class MainActivity extends Activity {
 		}
 	}
 	
-	private void insertCourseIDInScrollView(String newCourseID, int binarySearch) {
+	private void insertCourseIDInScrollView(String course, int binarySearch) {
 		//set/create a courseID row (from course_id_row.xml) dynamically inside ScrollView 
 		//every time a new CourseID is entered
 		LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View newCourseIDRow = inflater.inflate(R.layout.course_id_row, null);
 		TextView newCourseTextView = (TextView) newCourseIDRow.findViewById(R.id.CourseListTextView);
-		newCourseTextView.setText(newCourseID);		
+		newCourseTextView.setText(course);		
 		
-		Button enterCourseIDButton = (Button) newCourseIDRow.findViewById(R.id.EnterCourseIDButton);
-		Button deleteCourseIDButton = (Button) newCourseIDRow.findViewById(R.id.deleteCourseIDButton);
-		//button listener
-		enterCourseIDButton.setOnClickListener(enterCourseIDButtonListener);
-		deleteCourseIDButton.setOnClickListener(deleteCourseIDButtonListener);
-		courseScrollView.addView(newCourseIDRow, binarySearch);
+		//buttons and listeners
+		Button getCourseInfoButton = (Button) newCourseIDRow.findViewById(R.id.getCourseInfoButton);
+		getCourseInfoButton.setOnClickListener(getCourseInfoListener);
 		
+		Button addCourseButton = (Button) newCourseIDRow.findViewById(R.id.addCourseButton);
+		addCourseButton.setOnClickListener(addCourseButtonListener);
+		courseScrollView.addView(newCourseIDRow, binarySearch);	
 	}
 	
 	public OnClickListener enterCourseIDButtonListener = new OnClickListener() {
@@ -192,6 +199,36 @@ public class MainActivity extends Activity {
 			preferencesEditor.apply();
 		}
 		
+		
+	};
+	
+	public OnClickListener getCourseInfoListener = new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			//parsed Data
+			TableRow tableRow = (TableRow) v.getParent();
+			TextView courseIDTextView = (TextView) tableRow.findViewById(R.id.CourseListTextView);
+			String courseID = courseIDTextView.getText().toString();
+			
+			//new activity - new intent
+			Intent intent = new Intent(MainActivity.this, Course.class);
+			intent.putExtra(COURSE_ID, courseID); //passes into the new activity
+			startActivity(intent);
+		}
+	};
+	
+	public OnClickListener addCourseButtonListener = new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			//add course to list
+			TableRow tableRow = (TableRow) v.getParent();
+			TextView courseIDTextView = (TextView) tableRow.findViewById(R.id.CourseListTextView);
+			String courseID = courseIDTextView.getText().toString();
+			
+			//TODO: ADD courseID TO COURSE LIST
+		}
 		
 	};
 

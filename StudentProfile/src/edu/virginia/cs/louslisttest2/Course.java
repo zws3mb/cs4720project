@@ -2,7 +2,7 @@
 
 package edu.virginia.cs.louslisttest2; //should change this
 
-import java.util.Arrays;
+//import java.util.Arrays;
 
 
 public class Course {

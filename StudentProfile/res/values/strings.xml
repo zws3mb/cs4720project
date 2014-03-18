@@ -5,6 +5,7 @@
     <string name="title_activity_course_list">Course List</string>
     <string name="enter_course">Enter Course ID</string>
     <string name="add_to_course_list">Add</string>
+    <string name="get_course_info_button">Info</string>
     <string name="invalid_course_ID">Invalid CourseID Entered</string>
     <string name="missing_course_ID">Missing CourseID</string>        
     <string name="view_my_course_list">View My Course List</string>
