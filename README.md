@@ -1,12 +1,10 @@
 cs4720project
 =============
-### Team
-Pepper
+#### CodeName: Pepper
 
-###Members
-Amas, Larsen, Seid
+#### Members: Amas, Larsen, Seid
 
-##Phase 2: Create basic native mobile app that uses web service 1
+### Phase 2: Create basic native mobile app that uses web service 1
 
 - Android app
 - Consumes web service created in phase 1
