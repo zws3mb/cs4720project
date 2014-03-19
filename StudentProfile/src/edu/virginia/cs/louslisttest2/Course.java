@@ -4,40 +4,21 @@ package edu.virginia.cs.louslisttest2; //should change this
 
 public class Course {
 
-	public int courseID;
+	public String courseID;
 	public String courseName;
-	public int sectionNum;
+	public String sectionNum;
 	public String courseInstructor;
 	public String meetString;
 	public String meetRoom;
-
-	public Course(int courseID, String courseName, int sectionNum,
-			String courseInstructor, String meetString, String meetRoom) {
-		super();
-		this.courseID = courseID;
-		this.courseName = courseName;
-		this.sectionNum = sectionNum;
-		this.courseInstructor = courseInstructor;
-		this.meetString = meetString;
-		this.meetRoom = meetRoom;
-	}
-
-	@Override
-	public String toString() {
-		return "Course [courseID=" + courseID + ", courseName=" + courseName
-				+ ", sectionNum=" + sectionNum + ", courseInstructor=" + courseInstructor
-				+ ", meetString=" + meetString + ", meetRoom=" + meetRoom
-				+ "]";
-	}
-
-	public int getCourseID() {
+	
+	public String getCourseID() {
 		return courseID;
 	}
 
-	public void setCourseID(int courseID) {
+	public void setCourseID(String courseID) {
 		this.courseID = courseID;
 	}
-	
+
 	public String getCourseName() {
 		return courseName;
 	}
@@ -46,11 +27,11 @@ public class Course {
 		this.courseName = courseName;
 	}
 
-	public int getSectionNum() {
+	public String getSectionNum() {
 		return sectionNum;
 	}
 
-	public void setSectionNum(int sectionNum) {
+	public void setSectionNum(String sectionNum) {
 		this.sectionNum = sectionNum;
 	}
 
@@ -77,6 +58,30 @@ public class Course {
 	public void setMeetRoom(String meetRoom) {
 		this.meetRoom = meetRoom;
 	}
+
+
+
+	public Course(String courseID, String courseName, String sectionNum,
+			String courseInstructor, String meetString, String meetRoom) {
+		super();
+		this.courseID = courseID;
+		this.courseName = courseName;
+		this.sectionNum = sectionNum;
+		this.courseInstructor = courseInstructor;
+		this.meetString = meetString;
+		this.meetRoom = meetRoom;
+	}
+
+	@Override
+	public String toString() {
+		return "Course [courseID=" + courseID + ", courseName=" + courseName
+				+ ", sectionNum=" + sectionNum + ", courseInstructor=" + courseInstructor
+				+ ", meetString=" + meetString + ", meetRoom=" + meetRoom
+				+ "]";
+	}
+
+	
+
 	
 
 }

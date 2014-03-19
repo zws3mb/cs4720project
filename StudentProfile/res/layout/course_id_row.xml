@@ -7,11 +7,14 @@
 
     <TextView
         android:id="@+id/courseRowTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_span="2"
         android:layout_weight="1"
+        android:gravity="right"
+        android:text="uuuuuuuuu"
         android:textColor="@color/black"
+        android:textColorLink="@color/black"
         android:textIsSelectable="true" />
 
     <Button

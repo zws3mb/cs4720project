@@ -1,0 +1,108 @@
+//	--------------------SHERRIFF CODE BELOW ------------------------
+	
+//	values = new ArrayList<Course>();
+//
+//	// Adjust the URL with the appropriate parameters
+//	String url = webserviceURL; //TODO: Add the search term '+ is'
+//
+//	// First paramenter - Context
+//	// Second parameter - Layout for the row, android.R.layout.simple_list_item_1
+//	// Third parameter - ID of the TextView to which the data is written, android.R.id.text1
+//	// Forth - the Array of data
+//	//Log.d("HTTP", url);
+//	adapter = new ArrayAdapter<Course>(this,
+//			R.layout.course_id_row, R.id.courseRowTextView, values);
+//
+//	// Assign adapter to ListView OLD CODE
+//	courseScrollView.setAdapter(adapter);
+//
+//	new GetCoursesTask().execute(url);
+
+	/* -------------------------SHERRIFF CODE -------------------------------------
+	public static String getJSONfromURL(String url) {
+
+		// initialize
+		InputStream is = null;
+		String result = "";
+
+		// http post
+		try {
+			HttpClient httpclient = new DefaultHttpClient();
+			HttpPost httppost = new HttpPost(url);
+			HttpResponse response = httpclient.execute(httppost);
+			HttpEntity entity = response.getEntity();
+			is = entity.getContent();
+
+		} catch (Exception e) {
+			Log.e("LousList", "Error in http connection " + e.toString());
+		}
+
+		// convert response to string
+		try {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+					is, "iso-8859-1"), 8);
+			StringBuilder sb = new StringBuilder();
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				sb.append(line + "\n");
+			}
+			is.close();
+			result = sb.toString();
+		} catch (Exception e) {
+			Log.e("LousList", "Error converting result " + e.toString());
+		}
+
+		return result;
+	}
+
+	// The definition of our task class
+	private class GetCoursesTask extends AsyncTask<String, Integer, String> {
+		
+		protected void onPreExecute() {
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			String url = params[0];
+			ArrayList<Course> lcs = new ArrayList<Course>();
+
+			try {
+
+				String webJSON = getJSONfromURL(url);
+				Log.d("JSON", webJSON);
+				Gson gson = new Gson(); //Google's JSON parser
+
+				JsonParser parser = new JsonParser();
+				JsonArray Jarray = parser.parse(webJSON).getAsJsonArray();
+
+				for (JsonElement obj : Jarray) {
+					Course cse = gson.fromJson(obj, Course.class); //for each thing that 
+					//I pull out of JSON (object, info about object) is an instance of a class
+					
+					Log.d("COURSE", cse.toString());
+					lcs.add(cse);
+				}
+
+			} catch (Exception e) {
+				Log.e("LousList", "JSONPARSE:" + e.toString());
+			}
+
+			values.clear();
+			values.addAll(lcs);
+
+			return "Done!";
+		}
+
+		@Override
+		protected void onProgressUpdate(Integer... ints) {
+
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			// tells the adapter that the underlying data has changed and it
+			// needs to update the view
+			adapter.notifyDataSetChanged();
+		}
+	}
+-----------------------------------------------------------------------------*/	

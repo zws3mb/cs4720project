@@ -1,5 +1,6 @@
 //Team Pepper, {Amas, Larsen, Seid}, Phase 2
 package edu.virginia.cs.louslisttest2;
+//package com.cs4720project.studentprofile;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -12,11 +13,14 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+
+import edu.virginia.cs.louslisttest2.R;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -45,15 +49,15 @@ import android.widget.TextView;
 public class MainActivity extends Activity {
 	
 	ListView courseList; //old: ListView courseList;
-	String webserviceURL = "http://plato.cs.virginia.edu/~cs4720s14pepper/view/CLAS/";
-	ArrayList<Course> values;
+	static String searchWebServiceURL = "http://plato.cs.virginia.edu/~cs4720s14pepper/view/CLAS/";
+	ArrayList<Course> values = new ArrayList<Course>();
 	ArrayAdapter<Course> adapter;
 
-	public final static String COURSE_ID = "com.example.courseid.COURSEID";
+	public final static String COURSE_ID = "com.cs4720project.studentprofile.COURSEID";
 	//TODO: check all package names and make sure to reflect correct package path everywhere. 
 	
 	private SharedPreferences courseIDsEntered;
-	private TableLayout courseScrollView;
+	private TableLayout courseTableScrollView;
 	private EditText courseIDEditText;
 	Button enterCourseIDButton;
 	Button deleteCourseIDButton;
@@ -64,7 +68,21 @@ public class MainActivity extends Activity {
 		Log.d("onCreate", "start up");
 		setContentView(R.layout.activity_main);
 
-		initView();
+		//retrieve saved courses if app closes
+		courseIDsEntered = getSharedPreferences("courseIDList", MODE_PRIVATE);
+		//				Log.d("initView", "init" );	
+		courseTableScrollView = (TableLayout) findViewById(R.id.courseTableScrollView);
+		courseIDEditText = (EditText) findViewById(R.id.courseIDEditText);
+
+		//ENTER and DELETE (CLEAR) BUTTONS and LISTENERS
+		enterCourseIDButton = (Button) findViewById(R.id.enterCourseIDButton);
+		enterCourseIDButton.setOnClickListener(enterCourseIDButtonListener);
+
+		deleteCourseIDButton = (Button) findViewById(R.id.deleteCourseIDButton);		
+		deleteCourseIDButton.setOnClickListener(deleteCourseIDButtonListener);
+
+		//Add saved courses to the "Course List" ScrollView
+		updateSavedCourseList(null);
 	}
 
 	@Override
@@ -73,63 +91,89 @@ public class MainActivity extends Activity {
 		return true;
 	}
 
-	public void initView() {
-		//retrieve saved courses if app closes
-		courseIDsEntered = getSharedPreferences("courseList", MODE_PRIVATE);
-//		Log.d("initView", "init" );	
-		courseScrollView = (TableLayout) findViewById(R.id.courseTableScrollView);
-		courseIDEditText = (EditText) findViewById(R.id.courseIDEditText);
-		
-		//ENTER and DELETE (CLEAR) BUTTONS and LISTENERS
-		enterCourseIDButton = (Button) findViewById(R.id.enterCourseIDButton);
-		enterCourseIDButton.setOnClickListener(enterCourseIDButtonListener);
-
-		deleteCourseIDButton = (Button) findViewById(R.id.deleteCourseIDButton);		
-		deleteCourseIDButton.setOnClickListener(deleteCourseIDButtonListener);
-		
-//		updateSavedCourseList(null);
-//		
-////		//OLD EXAMPLE CODE BELOW
-//		values = new ArrayList<Course>();
-//
-//		// Adjust the URL with the appropriate parameters
-//		String url = webserviceURL; //TODO: Add the search term '+ is'
-//
-//		// First paramenter - Context
-//		// Second parameter - Layout for the row, android.R.layout.simple_list_item_1
-//		// Third parameter - ID of the TextView to which the data is written, android.R.id.text1
-//		// Forth - the Array of data
-//		//Log.d("HTTP", url);
-//		adapter = new ArrayAdapter<Course>(this,
-//				R.layout.course_id_row, R.id.courseRowTextView, values);
-//
-//		// Assign adapter to ListView OLD CODE
-//		courseScrollView.setAdapter(adapter);
-//
-//		new GetCoursesTask().execute(url);
-
-	}
-
+	//Adds a new course OR if null is passed the course list 
+	//is updated with saved courses.
 	private void updateSavedCourseList(String newCourseID) {
-		String [] courses = courseIDsEntered.getAll().keySet().toArray(new String[0]);
-		//sort them
-		Arrays.sort(courses, String.CASE_INSENSITIVE_ORDER);
-		
+//		String [] courses = courseIDsEntered.getAll().keySet().toArray(new String[0]);
+
 		if(newCourseID != null) {
 			//then add to courseList ScrollView
+			String [] courses = searchCourseID(newCourseID);
+			Arrays.sort(courses, String.CASE_INSENSITIVE_ORDER); 		//sort them
 			insertCourseIDInScrollView(newCourseID, Arrays.binarySearch(courses, newCourseID));
-		}
 		
-		else {
-			for(int i= 0; i<courses.length; i++) {
-				insertCourseIDInScrollView(courses[i], i);
+		//otherwise display the saved course list
+
+		for(int i= 0; i < courses.length; i++) {
+			insertCourseIDInScrollView(courses[i], i);
+			Log.d("courses[i]", courses[i]);
 			}
 		}
 	}
+	
+	private String[] searchCourseID(String newCourseID) {
+		ArrayList<String> courses = new ArrayList<String>();
+		queryWebService(newCourseID);
+		String test = "[{\"courseID\":\"ANTH 2120\",\"courseName\":\"The Concept of Culture\",\"sectionNum\":100,\"courseInstructor\":\"Ira Bashkow\",\"meetString\":\"TuTh 11:00AM - 12:15PM\",\"meetRoom\":\"Dell 1 103\"},{\"courseID\":\"ASTR 4993\",\"courseName\":\"Tutorial\",\"sectionNum\":14,\"courseInstructor\":\"Scott Ransom\",\"meetString\":\"TBA\",\"meetRoom\":\"TBA\"}]";
+//		String webJSON = getJSONfromURL(url);
+		//Log.d("JSON", webJSON);	
+		
+		Gson gson = new Gson(); //Google's JSON parser
 
+		JsonParser parser = new JsonParser();
+		JsonArray Jarray = parser.parse(test).getAsJsonArray();
+
+		for (JsonElement obj : Jarray) {
+			Course cse = gson.fromJson(obj, Course.class); //for each thing that 
+			courses.add(cse.courseID);
+			values.add(cse);
+			//I pull out of JSON (object, info about object) is an instance of a class
+			//Log.d("COURSE", cse.toString());
+			
+//			lcs.add(cse);	
+		}
+		String[] answer = courses.toArray(new String[courses.size()]);
+		return answer;
+	}
+
+	private String queryWebService(String newCourseID) {
+		DefaultHttpClient httpclient = new DefaultHttpClient(new BasicHttpParams());
+		HttpPost httppost = new HttpPost(searchWebServiceURL + newCourseID);
+		httppost.setHeader("Content-type", "application/json");
+		InputStream is = null;
+		String result = null;
+		
+		try {
+			HttpResponse response = httpclient.execute(httppost);
+			HttpEntity entity = response.getEntity();
+			is = entity.getContent();
+			
+			BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+			StringBuilder sb = new StringBuilder();
+			
+			String line = null;
+			
+			while ((line = reader.readLine()) != null) {
+				sb.append(line + "\n");
+			}
+
+			result = sb.toString();
+			Log.d("result", result);
+		} 
+		
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return result;
+	}
+	
 	//save course IDs
 	private void saveCourseIDs(String newCourseID) {
+		//check that it is a new courseID
 		String isNewCourseID = courseIDsEntered.getString(newCourseID, null);
+		
+		//Editor stores key/value pair
 		SharedPreferences.Editor preferencesEditor = courseIDsEntered.edit();
 		preferencesEditor.putString(newCourseID, newCourseID);
 		preferencesEditor.apply(); //@SuppressLint "NewApi" above to deal with API 9 vs 8
@@ -139,13 +183,16 @@ public class MainActivity extends Activity {
 		}
 	}
 	
-	private void insertCourseIDInScrollView(String course, int binarySearch) {
+	private void insertCourseIDInScrollView(String course, int arrayIndex) {
 		//set/create a courseID row (course_id_row.xml) dynamically inside ScrollView 
 		//every time a new CourseID is entered
 		LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		//inflate a new courseID row from course_id_row.xml
 		View newCourseIDRow = inflater.inflate(R.layout.course_id_row, null);
-		TextView newCourseTextView = (TextView) newCourseIDRow.findViewById(R.id.courseListTextView);
-		newCourseTextView.setText(course);		
+		
+		//TextView for ScrollView Row
+		TextView courseRowTextView = (TextView) newCourseIDRow.findViewById(R.id.courseRowTextView);
+		courseRowTextView.setText(course);		
 		
 		//buttons and listeners
 		Button getCourseInfoButton = (Button) newCourseIDRow.findViewById(R.id.getCourseInfoButton);
@@ -153,9 +200,17 @@ public class MainActivity extends Activity {
 		
 		Button addCourseButton = (Button) newCourseIDRow.findViewById(R.id.addCourseButton);
 		addCourseButton.setOnClickListener(addCourseButtonListener);
-		courseScrollView.addView(newCourseIDRow, binarySearch);	
+		
+		courseTableScrollView.addView(newCourseIDRow, arrayIndex);	
 	}
 	
+	//delete all courses in view
+	private void deleteAllCourseIDs() {
+		courseTableScrollView.removeAllViews();
+	}
+	
+	/* ----------- BUTTON LISTENERS ---------------*/
+
 	public OnClickListener enterCourseIDButtonListener = new OnClickListener() {
 
 		@Override
@@ -185,11 +240,6 @@ public class MainActivity extends Activity {
 		}
 	};
 	
-	//delete all courses in view
-	private void deleteAllCourseIDs() {
-		courseScrollView.removeAllViews();
-	}
-	
 	public OnClickListener deleteCourseIDButtonListener = new OnClickListener() {
 		
 		public void onClick(View v) {
@@ -210,6 +260,8 @@ public class MainActivity extends Activity {
 			
 			//new activity - new intent
 			Intent intent = new Intent(MainActivity.this, CourseInfoActivity.class);
+			
+			//Add courseID to the intent
 			intent.putExtra(COURSE_ID, courseID); //passes into the new activity
 			startActivity(intent);
 		}
@@ -225,94 +277,5 @@ public class MainActivity extends Activity {
 			
 			//TODO: ADD courseID TO COURSE LIST
 		}
-		
-	};
-
-	public static String getJSONfromURL(String url) {
-
-		// initialize
-		InputStream is = null;
-		String result = "";
-
-		// http post
-		try {
-			HttpClient httpclient = new DefaultHttpClient();
-			HttpPost httppost = new HttpPost(url);
-			HttpResponse response = httpclient.execute(httppost);
-			HttpEntity entity = response.getEntity();
-			is = entity.getContent();
-
-		} catch (Exception e) {
-			Log.e("LousList", "Error in http connection " + e.toString());
-		}
-
-		// convert response to string
-		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					is, "iso-8859-1"), 8);
-			StringBuilder sb = new StringBuilder();
-			String line = null;
-			while ((line = reader.readLine()) != null) {
-				sb.append(line + "\n");
-			}
-			is.close();
-			result = sb.toString();
-		} catch (Exception e) {
-			Log.e("LousList", "Error converting result " + e.toString());
-		}
-
-		return result;
-	}
-
-	// The definition of our task class
-	private class GetCoursesTask extends AsyncTask<String, Integer, String> {
-		
-		protected void onPreExecute() {
-		}
-
-		@Override
-		protected String doInBackground(String... params) {
-			String url = params[0];
-			ArrayList<Course> lcs = new ArrayList<Course>();
-
-			try {
-
-				String webJSON = getJSONfromURL(url);
-				Log.d("JSON", webJSON);
-				Gson gson = new Gson(); //Google's JSON parser
-
-				JsonParser parser = new JsonParser();
-				JsonArray Jarray = parser.parse(webJSON).getAsJsonArray();
-
-				for (JsonElement obj : Jarray) {
-					Course cse = gson.fromJson(obj, Course.class); //for each thing that 
-					//I pull out of JSON (object, info about object) is an instance of a class
-					
-					Log.d("COURSE", cse.toString());
-					lcs.add(cse);
-				}
-
-			} catch (Exception e) {
-				Log.e("LousList", "JSONPARSE:" + e.toString());
-			}
-
-			values.clear();
-			values.addAll(lcs);
-
-			return "Done!";
-		}
-
-		@Override
-		protected void onProgressUpdate(Integer... ints) {
-
-		}
-
-		@Override
-		protected void onPostExecute(String result) {
-			// tells the adapter that the underlying data has changed and it
-			// needs to update the view
-			adapter.notifyDataSetChanged();
-		}
-	}
-    
+	};    
 }
