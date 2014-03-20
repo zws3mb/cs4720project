@@ -18,16 +18,16 @@
             android:id="@+id/enterCourseTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/enter_course" />
+            android:text="@string/enter_course"
+            />
 
         <EditText
             android:id="@+id/courseIDEditText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:ems="10"
-            android:inputType="text" >
-
+            android:inputType="text"
+            android:layout_weight="1" >
             <requestFocus />
         </EditText>
 
@@ -35,21 +35,22 @@
             android:id="@+id/enterCourseIDButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/enter_button" />
-
+            android:text="@string/enter_button"
+             />
     </TableRow>
 
     <TableRow
         android:id="@+id/tableRow2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/baby_blue" >
+        android:background="@color/red" >
 
         <TextView
             android:id="@+id/courseListTextView"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_span="3"
+            android:layout_gravity="center"
+            android:layout_weight="1"
             android:gravity="center"
             android:padding="5dp"
             android:text="@string/title_activity_course_list"
@@ -63,30 +64,20 @@
         android:id="@+id/tableRow3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/baby_blue"
+        android:layout_weight="1"
+        android:background="@color/red"
         android:textColor="@color/black"
-        android:textColorHint="@color/black"
-		android:layout_weight="1" >
-        
-        <ScrollView
+        android:textColorHint="@color/black" >
+
+        <ListView
+            android:id="@+id/courseListView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" 
-            android:textColor="@color/black"
-            android:textColorHint="@color/black"
-            android:padding="5dp"   >
-
-            <TableLayout
-                android:id="@+id/courseTableScrollView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/black"
-            	android:textColorHint="@color/black"
-                android:padding="5dp"
-                android:stretchColumns="yes" >
-            </TableLayout>
-        </ScrollView>
-
+            android:layout_height="wrap_content"
+            android:padding="5dp" 
+            android:layout_weight="1" >
+        </ListView>
     </TableRow>
+
     <TableRow
         android:id="@+id/tableRow4"
         android:layout_width="match_parent"
@@ -96,11 +87,9 @@
             android:id="@+id/deleteCourseIDButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/delete_button"
             android:layout_span="2"
-            android:layout_weight="1" />
-    
+            android:layout_weight="1"
+            android:text="@string/delete_button" />
     </TableRow>
 
-    
 </TableLayout>

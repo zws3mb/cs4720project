@@ -1,6 +1,6 @@
 //Team Pepper, {Amas, Larsen, Seid}, Phase 2
 
-package edu.virginia.cs.louslisttest2; //should change this
+package com.cs4720project.studentprofile; //should change this
 
 public class Course {
 
@@ -10,6 +10,25 @@ public class Course {
 	public String courseInstructor;
 	public String meetString;
 	public String meetRoom;
+	
+	public Course(String courseID, String courseName, String sectionNum,
+			String courseInstructor, String meetString, String meetRoom) {
+		super();
+		this.courseID = courseID;
+		this.courseName = courseName;
+		this.sectionNum = sectionNum;
+		this.courseInstructor = courseInstructor;
+		this.meetString = meetString;
+		this.meetRoom = meetRoom;
+	}
+
+	@Override
+	public String toString() {
+		return "Course [courseID=" + courseID + ", courseName=" + courseName
+				+ ", sectionNum=" + sectionNum + ", courseInstructor=" + courseInstructor
+				+ ", meetString=" + meetString + ", meetRoom=" + meetRoom
+				+ "]";
+	}
 	
 	public String getCourseID() {
 		return courseID;
@@ -58,30 +77,4 @@ public class Course {
 	public void setMeetRoom(String meetRoom) {
 		this.meetRoom = meetRoom;
 	}
-
-
-
-	public Course(String courseID, String courseName, String sectionNum,
-			String courseInstructor, String meetString, String meetRoom) {
-		super();
-		this.courseID = courseID;
-		this.courseName = courseName;
-		this.sectionNum = sectionNum;
-		this.courseInstructor = courseInstructor;
-		this.meetString = meetString;
-		this.meetRoom = meetRoom;
-	}
-
-	@Override
-	public String toString() {
-		return "Course [courseID=" + courseID + ", courseName=" + courseName
-				+ ", sectionNum=" + sectionNum + ", courseInstructor=" + courseInstructor
-				+ ", meetString=" + meetString + ", meetRoom=" + meetRoom
-				+ "]";
-	}
-
-	
-
-	
-
 }

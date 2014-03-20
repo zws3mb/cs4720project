@@ -1,6 +1,5 @@
 //Team Pepper, {Amas, Larsen, Seid}, Phase 2
-package edu.virginia.cs.louslisttest2;
-//package com.cs4720project.studentprofile;
+package com.cs4720project.studentprofile;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -10,17 +9,19 @@ import java.util.Arrays;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 
+//import com.cs4720project.studentprofile.R;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
-import edu.virginia.cs.louslisttest2.R;
+import com.cs4720project.studentprofile.*;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -48,7 +49,7 @@ import android.widget.TextView;
 @SuppressLint("NewApi")
 public class MainActivity extends Activity {
 	
-	ListView courseList; //old: ListView courseList;
+	ListView courseList; //NOT USED
 	static String searchWebServiceURL = "http://plato.cs.virginia.edu/~cs4720s14pepper/view/CLAS/";
 	ArrayList<Course> values = new ArrayList<Course>();
 	ArrayAdapter<Course> adapter;
@@ -57,7 +58,7 @@ public class MainActivity extends Activity {
 	//TODO: check all package names and make sure to reflect correct package path everywhere. 
 	
 	private SharedPreferences courseIDsEntered;
-	private TableLayout courseTableScrollView;
+	private ListView courseListView;
 	private EditText courseIDEditText;
 	Button enterCourseIDButton;
 	Button deleteCourseIDButton;
@@ -68,10 +69,12 @@ public class MainActivity extends Activity {
 		Log.d("onCreate", "start up");
 		setContentView(R.layout.activity_main);
 
+		
+		
 		//retrieve saved courses if app closes
 		courseIDsEntered = getSharedPreferences("courseIDList", MODE_PRIVATE);
 		//				Log.d("initView", "init" );	
-		courseTableScrollView = (TableLayout) findViewById(R.id.courseTableScrollView);
+		courseListView = (ListView) findViewById(R.id.courseListView);
 		courseIDEditText = (EditText) findViewById(R.id.courseIDEditText);
 
 		//ENTER and DELETE (CLEAR) BUTTONS and LISTENERS
@@ -82,7 +85,16 @@ public class MainActivity extends Activity {
 		deleteCourseIDButton.setOnClickListener(deleteCourseIDButtonListener);
 
 		//Add saved courses to the "Course List" ScrollView
-		updateSavedCourseList(null);
+		//updateSavedCourseList(null);
+		String url = searchWebServiceURL + "ECON"; //hard code for now
+		
+		Log.d("HTTP", url);
+		adapter = new ArrayAdapter<Course>(this,
+				android.R.layout.simple_list_item_1, android.R.id.text1, values);
+		
+		courseListView.setAdapter(adapter);
+		
+		new GetCoursesTask().execute(url);
 	}
 
 	@Override
@@ -113,60 +125,175 @@ public class MainActivity extends Activity {
 	
 	private String[] searchCourseID(String newCourseID) {
 		ArrayList<String> courses = new ArrayList<String>();
-		queryWebService(newCourseID);
-		String test = "[{\"courseID\":\"ANTH 2120\",\"courseName\":\"The Concept of Culture\",\"sectionNum\":100,\"courseInstructor\":\"Ira Bashkow\",\"meetString\":\"TuTh 11:00AM - 12:15PM\",\"meetRoom\":\"Dell 1 103\"},{\"courseID\":\"ASTR 4993\",\"courseName\":\"Tutorial\",\"sectionNum\":14,\"courseInstructor\":\"Scott Ransom\",\"meetString\":\"TBA\",\"meetRoom\":\"TBA\"}]";
-//		String webJSON = getJSONfromURL(url);
-		//Log.d("JSON", webJSON);	
+//		queryWebService(newCourseID);
+		
+		//String test = "[{\"courseID\":\"ANTH 2120\",\"courseName\":\"The Concept of Culture\",\"sectionNum\":100,\"courseInstructor\":\"Ira Bashkow\",\"meetString\":\"TuTh 11:00AM - 12:15PM\",\"meetRoom\":\"Dell 1 103\"},{\"courseID\":\"ASTR 4993\",\"courseName\":\"Tutorial\",\"sectionNum\":14,\"courseInstructor\":\"Scott Ransom\",\"meetString\":\"TBA\",\"meetRoom\":\"TBA\"}]";
+		String webJSON = getJSONfromURL(searchWebServiceURL);
+		Log.d("JSON", webJSON);	
 		
 		Gson gson = new Gson(); //Google's JSON parser
 
 		JsonParser parser = new JsonParser();
-		JsonArray Jarray = parser.parse(test).getAsJsonArray();
+		JsonArray Jarray = parser.parse(webJSON).getAsJsonArray();
 
 		for (JsonElement obj : Jarray) {
 			Course cse = gson.fromJson(obj, Course.class); //for each thing that 
 			courses.add(cse.courseID);
 			values.add(cse);
 			//I pull out of JSON (object, info about object) is an instance of a class
-			//Log.d("COURSE", cse.toString());
-			
+			Log.d("COURSE", cse.toString());
 //			lcs.add(cse);	
 		}
 		String[] answer = courses.toArray(new String[courses.size()]);
 		return answer;
 	}
 
-	private String queryWebService(String newCourseID) {
-		DefaultHttpClient httpclient = new DefaultHttpClient(new BasicHttpParams());
-		HttpPost httppost = new HttpPost(searchWebServiceURL + newCourseID);
-		httppost.setHeader("Content-type", "application/json");
+	public static String getJSONfromURL(String url) {
+
+		// initialize
 		InputStream is = null;
-		String result = null;
-		
+		String result = "";
+
+		// http post
 		try {
+			HttpClient httpclient = new DefaultHttpClient();
+			HttpPost httppost = new HttpPost(url);
 			HttpResponse response = httpclient.execute(httppost);
 			HttpEntity entity = response.getEntity();
 			is = entity.getContent();
-			
-			BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+
+		} catch (Exception e) {
+			Log.e("LousList", "Error in http connection " + e.toString());
+		}
+
+		// convert response to string
+		try {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+					is, "iso-8859-1"), 8);
 			StringBuilder sb = new StringBuilder();
-			
 			String line = null;
-			
 			while ((line = reader.readLine()) != null) {
 				sb.append(line + "\n");
 			}
-
+			is.close();
 			result = sb.toString();
-			Log.d("result", result);
-		} 
-		
-		catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			Log.e("LousList", "Error converting result " + e.toString());
 		}
-		
+
 		return result;
 	}
+
+	private class GetCoursesTask extends AsyncTask<String, Integer, String> {
+		/*
+		 * NEW
+		 */
+		ArrayList<String> courses = new ArrayList<String>();
+		
+		@Override
+		protected void onPreExecute() {
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			String url = params[0];
+			ArrayList<Course> lcs = new ArrayList<Course>();
+
+			try {
+
+				String webJSON = getJSONfromURL(url);
+				Log.d("JSON", webJSON);
+				Gson gson = new Gson();
+
+				JsonParser parser = new JsonParser();
+				JsonArray Jarray = parser.parse(webJSON).getAsJsonArray();
+
+				for (JsonElement obj : Jarray) {
+					Course cse = gson.fromJson(obj, Course.class);
+					/*
+					 * NEW
+					 */
+					courses.add(cse.courseID);
+					values.add(cse);
+					Log.d("COURSE", cse.toString());
+					lcs.add(cse);
+				}
+
+			} catch (Exception e) {
+				Log.e("LousList", "JSONPARSE:" + e.toString());
+			}
+
+			values.clear();
+			values.addAll(lcs);
+
+			return "Done!";
+		}
+
+		@Override
+		protected void onProgressUpdate(Integer... ints) {
+
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			// tells the adapter that the underlying data has changed and it
+			// needs to update the view
+			adapter.notifyDataSetChanged();
+		}
+	}
+	
+	
+//	private String queryWebService(String newCourseID) {
+//		
+//		InputStream is = null;
+//		String result = "";
+//		
+//		try {
+//			
+//		
+//		DefaultHttpClient httpclient = new DefaultHttpClient(new BasicHttpParams());
+//		HttpPost httppost = new HttpPost(searchWebServiceURL + newCourseID);
+//		httppost.setHeader("Content-type", "application/json");
+//				
+//		}
+//		
+//		catch (Exception e) {
+//			Log.e("LousList", "Error in http: " + e.toString());
+//		}
+//		
+//			HttpResponse response = httpclient.execute(httppost);
+//			StatusLine statusLine = response.getStatusLine();
+//			
+//			int statusCode = statusLine.getStatusCode();
+//			if (statusCode == 200) //SUCCESS
+//			{
+//				HttpEntity entity = response.getEntity();
+//				is = entity.getContent();
+//				Log.d("STATUSCODE", "200!!!!!!");
+//				BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+//				StringBuilder sb = new StringBuilder();
+//				
+//				String line = null;
+//				
+//				while ((line = reader.readLine()) != null) {
+//					sb.append(line + "\n");
+//				}
+//				is.close();
+//				result = sb.toString();
+//				Log.d("result", result);
+//
+//			} else {
+//				Log.d("JSON","Failed to download");
+//			}
+//		
+//		} 
+//		
+//		catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		
+//		return result;
+//	}
 	
 	//save course IDs
 	private void saveCourseIDs(String newCourseID) {
@@ -201,12 +328,12 @@ public class MainActivity extends Activity {
 		Button addCourseButton = (Button) newCourseIDRow.findViewById(R.id.addCourseButton);
 		addCourseButton.setOnClickListener(addCourseButtonListener);
 		
-		courseTableScrollView.addView(newCourseIDRow, arrayIndex);	
+		courseListView.addView(newCourseIDRow, arrayIndex);	
 	}
 	
 	//delete all courses in view
 	private void deleteAllCourseIDs() {
-		courseTableScrollView.removeAllViews();
+		courseListView.removeAllViews();
 	}
 	
 	/* ----------- BUTTON LISTENERS ---------------*/
